@@ -1,42 +1,161 @@
-# curl checks (session cookie kept in a local cookie jar; token value not printed)
+# curl evidence (2026-11-07 21:03, curl 8.7.1)
+# Users are fictional. Session cookies are kept in temporary cookie jars; CSRF tokens and cookie values are never printed.
+# Format: $ METHOD path [body]  ->  HTTP status and JSON response
 
-$ curl -i http://localhost:3000/api/health
-HTTP/1.1 200 OK
-{"ok":true}
+## Check 1 - registration and login
+$ POST /api/register {"email":"  CURL.A@Example.TEST ",...}
+  -> 201 {"id":4,"email":"curl.a@example.test"}
+$ POST /api/register {"email":"curl.b@example.test",...}
+  -> 201 {"id":5,"email":"curl.b@example.test"}
+$ GET /api/me   (right after registering A: not logged in)
+  -> 401 {"error":"Login required"}
+$ POST /api/register   (duplicate email curl.a@example.test)
+  -> 409 {"error":"An account with that email already exists"}
+$ POST /api/register   (password "short")
+  -> 400 {"error":"Password must be 8-128 characters"}
+$ POST /api/register   (129-character password)
+  -> 400 {"error":"Password must be 8-128 characters"}
+$ POST /api/register   (email "not-an-email")
+  -> 400 {"error":"Enter a valid email address such as user@example.com"}
+$ POST /api/login   (A, wrong password)
+  -> 401 {"error":"Invalid email or password"}
+$ POST /api/login   (unknown email)
+  -> 401 {"error":"Invalid email or password"}
+$ POST /api/login   (A, correct password)
+  -> 200 {"id":4,"email":"curl.a@example.test"}
+$ GET /api/me   (A)
+  -> 200 {"id":4,"email":"curl.a@example.test"}
 
-$ curl -i http://localhost:3000/api/no-such-route
-HTTP/1.1 404 Not Found
-{"error":"API route not found"}
+## Check 2 - logged-out access and CSRF
+$ GET /api/purchases   (no session)
+  -> 401 {"error":"Login required"}
+$ GET /api/categories   (no session)
+  -> 401 {"error":"Login required"}
+$ POST /api/purchases   (valid CSRF token, not logged in)
+  -> 401 {"error":"Login required"}
+$ DELETE /api/purchases/1   (valid CSRF token, not logged in)
+  -> 401 {"error":"Login required"}
+A before: {"count":0,"totalCents":0,"records":[]}
+$ POST /api/purchases   (A logged in, NO X-CSRF-Token header)
+  -> 403 {"error":"CSRF token rejected"}
+$ POST /api/purchases   (A logged in, WRONG token)
+  -> 403 {"error":"CSRF token rejected"}
+$ POST /api/purchases   (A logged in, Origin: http://evil.example)
+  -> 403 {"error":"Origin rejected"}
+$ POST /api/login   (no X-CSRF-Token header)
+  -> 403 {"error":"CSRF token rejected"}
+A after:  {"count":0,"totalCents":0,"records":[]}
 
-$ curl -i http://localhost:3000/api/purchases   (no session)
-HTTP/1.1 401 Unauthorized
-{"error":"Login required"}
+## Check 3 - A adds two purchases
+$ GET /api/categories   (A)
+  -> 200 [{"id":1,"name":"Fund"},{"id":2,"name":"Stock"},{"id":3,"name":"Other"}]
+$ POST /api/purchases {"name":"Example Index Fund","quantity":5,"unitPriceCents":2000,"categoryId":1}
+  -> 201 {"id":4,"name":"Example Index Fund","quantity":5,"unitPriceCents":2000,"categoryId":1,"categoryName":"Fund","costCents":10000}
+$ POST /api/purchases {"name":"Example Company","quantity":3,"unitPriceCents":1550,"categoryId":2,"costCents":1,"ownerId":999}
+  -> 201 {"id":5,"name":"Example Company","quantity":3,"unitPriceCents":1550,"categoryId":2,"categoryName":"Stock","costCents":4650}
+A list: {"count":2,"totalCents":14650,"records":[{"id":4,"name":"Example Index Fund","quantity":5,"unitPriceCents":2000,"categoryName":"Fund","costCents":10000},{"id":5,"name":"Example Company","quantity":3,"unitPriceCents":1550,"categoryName":"Stock","costCents":4650}]}
 
-$ curl -i -X POST /api/login  -H "Content-Type: application/json" -d "{bad json"   (with cookie + token)
-HTTP/1.1 400 Bad Request
-{"error":"Invalid JSON"}
+## Check 4 (API part) - a brand-new login session sees the same records
+A (new session) list: {"count":2,"totalCents":14650,"records":[{"id":4,"name":"Example Index Fund","quantity":5,"unitPriceCents":2000,"categoryName":"Fund","costCents":10000},{"id":5,"name":"Example Company","quantity":3,"unitPriceCents":1550,"categoryName":"Stock","costCents":4650}]}
 
-$ curl -i -X POST /api/login  (no X-CSRF-Token header)
-HTTP/1.1 403 Forbidden
-{"error":"CSRF token rejected"}
+## Check 5 - edit and delete
+$ PUT /api/purchases/5 {"name":"Example Company","quantity":4,...,"id":4}
+  -> 200 {"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryId":2,"categoryName":"Stock","costCents":6200}
+A list: {"count":2,"totalCents":16200,"records":[{"id":4,"name":"Example Index Fund","quantity":5,"unitPriceCents":2000,"categoryName":"Fund","costCents":10000},{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
+$ DELETE /api/purchases/4
+  -> 200 {"ok":true}
+A list: {"count":1,"totalCents":6200,"records":[{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
+$ DELETE /api/purchases/4   (again)
+  -> 404 {"error":"Purchase not found"}
 
-$ curl -i -X POST /api/login  (wrong password, valid token)
-HTTP/1.1 401 Unauthorized
-{"error":"Invalid email or password"}
+## Check 6 - user B against A's purchase id 5
+(B logged in)
+A before: {"count":1,"totalCents":6200,"records":[{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
+$ GET /api/purchases   (B)
+  -> 200 []
+$ PUT /api/purchases/5   (B) {"name":"Changed by B","quantity":1,"unitPriceCents":1,"categoryId":3}
+  -> 404 {"error":"Purchase not found"}
+$ DELETE /api/purchases/5   (B)
+  -> 404 {"error":"Purchase not found"}
+$ POST /api/purchases   (B) {"id":5,"ownerId":4,"owner_id":4,"name":"B Example Bond",...}
+  -> 201 {"id":6,"name":"B Example Bond","quantity":2,"unitPriceCents":5000,"categoryId":3,"categoryName":"Other","costCents":10000}
+A after:  {"count":1,"totalCents":6200,"records":[{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
+B list:   {"count":1,"totalCents":10000,"records":[{"id":6,"name":"B Example Bond","quantity":2,"unitPriceCents":5000,"categoryName":"Other","costCents":10000}]}
+(B's test record 6 deleted)
 
-$ curl -i -X POST /api/purchases  (valid token, not logged in)
-HTTP/1.1 401 Unauthorized
-{"error":"Login required"}
+## Check 7 - invalid input (as A); none may change data
+A before: {"count":1,"totalCents":6200,"records":[{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
+$ POST blank name "   "
+  -> 400 {"error":"Investment name must be 1-100 characters"}
+$ POST name of 101 characters
+  -> 400 {"error":"Investment name must be 1-100 characters"}
+$ POST quantity 1.5
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST quantity 0
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST quantity 10001
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST quantity "five"
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST quantity "5"
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST quantity true
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST quantity null
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST missing quantity
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ POST unitPriceCents 0
+  -> 400 {"error":"Unit price must be a whole number of cents from 1 to 100,000,000 ($0.01 to $1,000,000.00)"}
+$ POST unitPriceCents 1.5
+  -> 400 {"error":"Unit price must be a whole number of cents from 1 to 100,000,000 ($0.01 to $1,000,000.00)"}
+$ POST unitPriceCents 100000001
+  -> 400 {"error":"Unit price must be a whole number of cents from 1 to 100,000,000 ($0.01 to $1,000,000.00)"}
+$ POST categoryId 99 (unknown)
+  -> 400 {"error":"Choose an existing category"}
+$ POST array body
+  -> 400 {"error":"Request body must be a JSON object"}
+$ PUT /api/purchases/5 quantity 0
+  -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+$ PUT /api/purchases/abc
+  -> 400 {"error":"Purchase ID must be a positive integer"}
+$ PUT /api/purchases/0
+  -> 400 {"error":"Purchase ID must be a positive integer"}
+$ PUT /api/purchases/-1
+  -> 400 {"error":"Purchase ID must be a positive integer"}
+$ PUT /api/purchases/1.5
+  -> 400 {"error":"Purchase ID must be a positive integer"}
+$ PUT /api/purchases/1e3
+  -> 400 {"error":"Purchase ID must be a positive integer"}
+$ DELETE /api/purchases/abc
+  -> 400 {"error":"Purchase ID must be a positive integer"}
+A after:  {"count":1,"totalCents":6200,"records":[{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
 
-$ curl -i -X POST /api/purchases  -H "Origin: http://evil.example"
-HTTP/1.1 403 Forbidden
-{"error":"Origin rejected"}
+## Check 8 - HTML-like name, repeated
+$ POST /api/purchases {"name":"<b>Example</b>",...}   (twice)
+  -> 201 {"id":6,"name":"<b>Example</b>","quantity":1,"unitPriceCents":100,"categoryId":3,"categoryName":"Other","costCents":100}
+  -> 201 {"id":7,"name":"<b>Example</b>","quantity":1,"unitPriceCents":100,"categoryId":3,"categoryName":"Other","costCents":100}
+(both test records deleted) A list: {"count":1,"totalCents":6200,"records":[{"id":5,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryName":"Stock","costCents":6200}]}
 
-# Login response headers: the session cookie flags (value redacted)
-HTTP/1.1 200 OK
-Set-Cookie: sid=<redacted>; Path=/; Expires=Sun, 08 Nov 2026 02:36:45 GMT; HttpOnly; SameSite=Lax
-{"id":1,"email":"user.a@example.test"}
+## Check 10 - JSON errors
+$ POST /api/purchases with body {"name":   (malformed JSON)
+  -> 400 {"error":"Invalid JSON"}
+$ GET /api/does-not-exist
+  -> 404 {"error":"API route not found"}
+$ GET /api/health
+  -> 200 {"ok":true}
 
-# Stored users (password column shows only the hash prefix; plaintext is never stored)
+## Logout
+$ POST /api/logout   (A)
+  -> 200 {"ok":true}
+$ GET /api/me   (reusing A's old session cookie after logout)
+  -> 401 {"error":"Login required"}
+
+## Session cookie flags on login (value redacted)
+Set-Cookie: sid=<redacted>; Path=/; Expires=Sun, 08 Nov 2026 03:03:42 GMT; HttpOnly; SameSite=Lax
+
+## Stored users table (only an Argon2id hash is stored; prefix shown, salt and hash omitted)
 {"id":1,"email":"user.a@example.test","hash_prefix":"$argon2id$v=19$m=65536,t=3,p=4..."}
 {"id":2,"email":"user.b@example.test","hash_prefix":"$argon2id$v=19$m=65536,t=3,p=4..."}
+{"id":4,"email":"curl.a@example.test","hash_prefix":"$argon2id$v=19$m=65536,t=3,p=4..."}
+{"id":5,"email":"curl.b@example.test","hash_prefix":"$argon2id$v=19$m=65536,t=3,p=4..."}

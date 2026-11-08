@@ -14,8 +14,7 @@ app.use(express.json({limit:'16kb'}));
 configureSecurity(app);
 const asyncRoute = fn => (req,res,next) => Promise.resolve(fn(req,res,next)).catch(next);
 
-// Prepared statements: every value supplied by a request is bound with "?",
-// never concatenated into SQL text.
+// As requested, I'm never concatenating user input into SQL queries.
 const sql = {
   userByEmail: db.prepare('SELECT id, email, password_hash FROM users WHERE email = ?'),
   userById: db.prepare('SELECT id, email FROM users WHERE id = ?'),
@@ -29,7 +28,7 @@ const sql = {
   deletePurchase: db.prepare('DELETE FROM purchases WHERE id = ? AND owner_id = ?'),
 };
 
-// S1: Health check.
+// S1: Used to perform health check.
 app.get('/api/health',(req,res)=>res.json({ok:true}));
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,7 +47,7 @@ function readCredentials(body) {
 app.post('/api/register',asyncRoute(async(req,res)=> {
   const credentials = readCredentials(req.body);
   if (credentials.error) return res.status(400).json({error:credentials.error});
-  const {email, password} = credentials;
+  const { email, password } = credentials;
   if (email.length < 3 || email.length > 254 || !EMAIL_PATTERN.test(email)) {
     return res.status(400).json({error:'Enter a valid email address such as user@example.com'});
   }
@@ -78,7 +77,7 @@ let dummyHashPromise;
 const dummyHash = () => dummyHashPromise ??= argon2.hash('not-a-real-account-password',{type:argon2.argon2id});
 const promisify = (session, method) => new Promise((resolve,reject)=>session[method](e=>e?reject(e):resolve()));
 
-// S3: Login.
+// S3: Login route.
 app.post('/api/login',asyncRoute(async(req,res)=> {
   const credentials = readCredentials(req.body);
   if (credentials.error) return res.status(400).json({error:credentials.error});
@@ -103,6 +102,7 @@ app.get('/api/me',requireAuth,(req,res)=> {
   res.json(user);
 });
 
+// Logout route.
 app.post('/api/logout',requireAuth,(req,res,next)=> {
   // S5: Destroy the server-side session and clear the browser cookie.
   req.session.destroy(err=> {
@@ -118,7 +118,7 @@ app.get('/api/categories',requireAuth,(req,res)=> {
 });
 
 // S7: Reusable joined SELECT. Aliases match the API field names, and cost is
-// calculated by SQLite from stored integer cents rather than trusted from the client.
+// calculated by SQLite from stored integer cents (convention) rather than trusted from the client.
 const PURCHASE_SELECT = `SELECT p.id, p.name, p.quantity,
     p.unit_price_cents AS unitPriceCents,
     p.category_id AS categoryId,

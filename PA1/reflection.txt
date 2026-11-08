@@ -1,0 +1,24 @@
+Name: MAURICIO FIGUEIREDO MATTOS COSTA
+
+Test report (Pass or Needs work):
+Check 1: PASS
+Check 2: PASS
+Check 3: PASS
+Check 4: PASS
+Check 5: PASS
+Check 6: PASS
+Check 7: PASS
+Check 8: PASS
+Check 9: PASS
+
+1. How does an HTML ID connect a form control to JavaScript?
+
+An HTML ID gives a form control a unique name. JS uses the function "document.getElementbyId()" with that ID to access and handle that form.
+
+2. Why convert quantity and unit price with Number?
+
+Mainly because input values are returned as strings even when use number inputs. By using Number(), we manage to convert those strings to numerical values (e.g. quantity and price) correctly, so we can do math later like multiplication and addition.
+
+3. Why clear the old history before rebuilding it?
+
+So that we don't display entries multiple times. If we did not clear it, we would have the previous list elements displayed, thus showing duplicates.

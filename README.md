@@ -15,9 +15,9 @@ COP5818 PA2. My PA1 Investment Purchase Tracker extended with an Express + SQLit
 3. Copy `.env.example` to `.env` and replace `SESSION_SECRET` with a new random value of at least 32 characters, for example the output of
    `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`.
 4. Run `npm start`, then visit **http://localhost:3000**. Opening `index.html` directly will not work.
-5. `npm test` runs the validation unit tests. With the server running, `npm run check:api` runs the API-client checks used in `test-report.md`.
+5. `npm test` runs the validation unit tests. The curl requests and responses used in `test-report.md` are in `evidence/curl-checks.txt`.
 
-A backup of my completed PA1 is kept locally in `PA1/`. It is git-ignored and not part of the submission.
+My completed PA1 is included in `PA1/` for reference. The PA2 frontend in `public/` is built from it.
 
 At startup `server.js` runs `schema.sql`, so a fresh install creates an empty `tracker.db` with the three seeded categories (Fund, Stock, Other). Do not submit `.env`, `tracker.db*`, `node_modules/`, or `.git/`.
 
@@ -31,7 +31,7 @@ At startup `server.js` runs `schema.sql`, so a fresh install creates an empty `t
 | `schema.sql` | Supplied SQLite schema and category seed |
 | `public/` | My completed PA1 markup and styles (C1–C7), extended with account, category and edit controls (F1–F7) |
 | `validation.test.js` | `node:test` unit tests for validation, including boundaries |
-| `api-checks.js` | API-client test script (`npm run check:api`); fictional `@example.test` users |
+| `PA1/` | My completed PA1 (reference) |
 | `test-report.md`, `evidence/` | Test results and screenshots |
 | `git-log.txt` | Git history |
 

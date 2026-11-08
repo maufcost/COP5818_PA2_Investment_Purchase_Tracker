@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "test": "node --test validation.test.js",
-    "check:api": "node api-checks.js"
+    "test": "node --test validation.test.js"
   },
   "dependencies": {
     "argon2": "^0.45.2",
