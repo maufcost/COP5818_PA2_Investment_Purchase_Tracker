@@ -33,7 +33,6 @@ At startup `server.js` runs `schema.sql`, so a fresh install creates an empty `t
 | `validation.test.js` | `node:test` unit tests for validation, including boundaries |
 | `PA1/` | My completed PA1 (reference) |
 | `test-report.md`, `evidence/` | Test results and screenshots |
-| `git-log.txt` | Git history |
 
 ## Part 1: Express and the HTTP flow
 
@@ -126,8 +125,14 @@ The browser checks in `script.js` give fast, friendly feedback, but the user con
 
 ## AI-use disclosure
 
-Claude Code (Anthropic) was used to help implement and test this assignment. *Edit this section to match the course AI-use policy.*
+This assignment was completed with the assistance of an AI coding tool.
+
+> Claude Code (Claude Opus 5.5 model). Anthropic. Accessed 2026-11-07.
+
+**How it was used.** Claude Code helped implement the numbered TODOs in `server.js`, `validation.js` and `public/script.js`, add the extra validation tests, and draft the explanations in this README and `test-report.md`. It also ran the browser and curl checks recorded as evidence. It diagnosed one environment issue: `better-sqlite3` crashed on Node 23, which led to using Node 24 LTS.
+
+**My own work.** The interface in `public/` is built from my completed PA1 (markup and styles, included in `PA1/`). I directed the work and made the design and submission decisions, reviewed and ran the application myself, asked for explanations of the authentication, session and cookie flow, and edited the code comments and documentation. `security.js`, `schema.sql` and the TODO structure were supplied by the course starter.
 
 ## Git history
 
-See `git-log.txt` (generated with `git log --stat`). Repository URL: not public.
+Repository: <!-- add the public repository URL here --> REPOSITORY_URL
