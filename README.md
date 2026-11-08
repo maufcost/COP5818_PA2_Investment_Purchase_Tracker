@@ -1,6 +1,8 @@
 # Investment Purchase Tracker PA2
 
-Student name and ID: Mauricio Costa, ID: ________
+Student name: Mauricio Figueiredo Mattos Costa
+ID: 4855025
+Email: ma038677@ucf.edu
 
 COP5818 PA2. My PA1 Investment Purchase Tracker extended with an Express + SQLite backend, categories, edit/delete, and private per-user purchase histories behind session login. Local classroom application; all accounts and purchases are fictional.
 
@@ -15,6 +17,8 @@ COP5818 PA2. My PA1 Investment Purchase Tracker extended with an Express + SQLit
 4. Run `npm start`, then visit **http://localhost:3000**. Opening `index.html` directly will not work.
 5. `npm test` runs the validation unit tests. With the server running, `npm run check:api` runs the API-client checks used in `test-report.md`.
 
+A backup of my completed PA1 is kept locally in `PA1/`. It is git-ignored and not part of the submission.
+
 At startup `server.js` runs `schema.sql`, so a fresh install creates an empty `tracker.db` with the three seeded categories (Fund, Stock, Other). Do not submit `.env`, `tracker.db*`, `node_modules/`, or `.git/`.
 
 ## Files
@@ -25,7 +29,7 @@ At startup `server.js` runs `schema.sql`, so a fresh install creates an empty `t
 | `validation.js` | `validatePurchase(body, validCategoryIds)` (V1) |
 | `security.js` | Supplied session cookie and CSRF/Origin middleware, `requireAuth` |
 | `schema.sql` | Supplied SQLite schema and category seed |
-| `public/` | PA1 layout extended with account, category and edit controls (F1–F7) |
+| `public/` | My completed PA1 markup and styles (C1–C7), extended with account, category and edit controls (F1–F7) |
 | `validation.test.js` | `node:test` unit tests for validation, including boundaries |
 | `api-checks.js` | API-client test script (`npm run check:api`); fictional `@example.test` users |
 | `test-report.md`, `evidence/` | Test results and screenshots |

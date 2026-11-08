@@ -1,113 +1,312 @@
-/* Investment Purchase Tracker - PA1 layout extended for PA2 (account, categories, edit/delete). */
+/* INVESTMENT PURCHASE TRACKER - styles from my PA1 (C1-C7), extended for PA2
+   with the account panel, category select, edit/delete buttons and status messages. */
 
-/* C1: Page defaults */
-* { box-sizing: border-box; }
+/* C1: PAGE DEFAULTS */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   line-height: 1.5;
-  color: #1f2a33;
-  background: #f3f6f8;
+  color: #333;
+  background-color: #f5f5f5;
 }
-.container { width: 92%; max-width: 1050px; margin: 0 auto; }
-[hidden] { display: none !important; }
 
-/* C2: Header and headings */
-.site-header { background: #17324d; color: #f5f9fc; padding: 30px 0; }
-.course-label { font-size: 0.85rem; margin: 0 0 8px; }
-.site-header p:last-child { margin: 0; }
-h1 { font-size: 2rem; margin: 0 0 8px; }
-h2 { font-size: 1.25rem; margin: 0 0 18px; }
-h3 { font-size: 1rem; margin: 0 0 8px; }
+.container {
+  width: 92%;
+  max-width: 1050px;
+  margin: 0 auto;
+}
 
-/* C3: Main layout and panels */
+[hidden] {
+  display: none !important;
+}
+
+/* C2: HEADER AND HEADINGS */
+.site-header {
+  background-color: #333;
+  color: #fff;
+  padding: 30px 0;
+}
+
+.course-label {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 0 0 18px;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+/* C3: MAIN LAYOUT AND PANELS */
 .page-layout {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
   gap: 24px;
   padding-top: 28px;
 }
+
+/* PA2: the tracker wrapper repeats the PA1 grid so summary/form/history keep their places. */
 .tracker {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
   gap: 24px;
 }
+
 .panel {
   min-width: 0;
   background: #fff;
   padding: 24px;
-  border: 1px solid #d3dbe2;
+  border: 1px solid #ccc;
   border-radius: 8px;
 }
-.account, .purchases { grid-column: 1 / -1; }
 
-/* Account panel */
-.auth-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
-.account-status { margin: 4px 0 0; font-weight: bold; overflow-wrap: anywhere; }
+.purchases,
+.account {
+  grid-column: 1 / -1;
+}
 
-/* C4: Summary cards */
-.balance-card { background: #e8f1f8; border-radius: 6px; padding: 18px; margin-bottom: 18px; }
-.balance-value { font-size: 2rem; font-weight: bold; margin: 0; overflow-wrap: anywhere; }
-.total-card { border: 1px solid #d3dbe2; padding: 14px; border-radius: 6px; }
-.total-value { font-size: 1.25rem; font-weight: bold; margin: 0; overflow-wrap: anywhere; }
-.hint { font-size: 0.88rem; color: #4d5b66; }
-.form-field .hint { margin: 6px 0 0; }
+/* PA2: account panel */
+.auth-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+}
 
-/* C5: Form controls */
-.form-field { margin-bottom: 16px; }
-label { display: block; font-weight: bold; margin-bottom: 6px; }
-input, select {
+.account-status {
+  margin: 4px 0 0;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+/* C4: SUMMARY CARDS */
+.balance-card {
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.balance-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.total-card {
+  border: 1px solid #ccc;
+  padding: 14px;
+  border-radius: 6px;
+}
+
+.total-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  font-size: 0.88rem;
+  color: #666;
+}
+
+.form-field .hint {
+  margin: 6px 0 0;
+}
+
+/* C5: FORM CONTROLS */
+.form-field {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+input,
+select {
   width: 100%;
   padding: 11px;
-  border: 1px solid #7b8994;
+  border: 1px solid #ccc;
   border-radius: 4px;
   font: inherit;
-  background: #fff;
   color: inherit;
+  background-color: #fff;
 }
-.button-row { display: flex; flex-wrap: wrap; gap: 10px; }
-.submit-button, .secondary-button, .small-button {
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.submit-button {
+  background-color: #333;
+  color: #fff;
+  border: 0;
   border-radius: 4px;
   padding: 12px 20px;
   font: inherit;
   cursor: pointer;
 }
-.submit-button { background: #17324d; color: #fff; border: 0; }
-.submit-button:hover { background: #24547f; }
-.secondary-button, .small-button { background: #fff; color: #17324d; border: 1px solid #17324d; }
-.secondary-button:hover, .small-button:hover { background: #e8f1f8; }
-.small-button { padding: 6px 12px; font-size: 0.9rem; }
-.small-button.danger { color: #9b1c1c; border-color: #9b1c1c; }
-.small-button.danger:hover { background: #fbeaea; }
-button:disabled { opacity: 0.6; cursor: progress; }
-input:focus-visible, select:focus-visible, button:focus-visible {
-  outline: 3px solid #1367aa;
+
+.submit-button:hover {
+  background-color: #555;
+}
+
+/* PA2: secondary actions (Register, Log out, Cancel edit, Edit, Delete) */
+.secondary-button,
+.small-button {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 12px 20px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.secondary-button:hover,
+.small-button:hover {
+  background-color: #f0f0f0;
+}
+
+.small-button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.small-button.danger {
+  color: #a32020;
+  border-color: #a32020;
+}
+
+.small-button.danger:hover {
+  background-color: #fbeaea;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 3px solid #007bff;
   outline-offset: 3px;
 }
-input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #b42318; border-width: 2px; }
 
-/* Status message shared by account and purchase actions */
-.message { grid-column: 1 / -1; min-height: 1.5em; margin: 0; font-weight: bold; overflow-wrap: anywhere; }
-.message:empty { display: none; }
-.message[data-kind] { padding: 12px 16px; border-radius: 6px; border: 1px solid; }
-.message[data-kind="success"] { background: #e7f6ec; border-color: #2f7a46; color: #1d5230; }
-.message[data-kind="error"] { background: #fdecea; border-color: #b42318; color: #8a1c12; }
-.message[data-kind="info"] { background: #e8f1f8; border-color: #24547f; color: #17324d; }
-
-/* C6: History and footer */
-.purchase-list { padding-left: 22px; margin-bottom: 0; }
-.purchase-list li { padding: 10px 0; border-bottom: 1px solid #d3dbe2; overflow-wrap: anywhere; }
-.purchase-list li.editing { background: #fff8e1; }
-.purchase-text { display: block; margin-bottom: 6px; }
-.item-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.site-footer { padding-top: 18px; padding-bottom: 24px; font-size: 0.88rem; color: #4d5b66; }
-
-/* C7: Responsive layout */
-@media (max-width: 700px) {
-  .page-layout, .tracker, .auth-fields { grid-template-columns: 1fr; }
-  .panel { padding: 18px; }
+input[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border: 2px solid #a32020;
 }
+
+.message {
+  grid-column: 1 / -1;
+  min-height: 1.5em;
+  margin: 0;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+/* PA2: one status area shared by account and purchase actions */
+.message:empty {
+  display: none;
+}
+
+.message[data-kind] {
+  padding: 12px 16px;
+  border: 1px solid;
+  border-radius: 6px;
+}
+
+.message[data-kind="success"] {
+  background-color: #e9f5ec;
+  border-color: #2e7d45;
+  color: #1e5530;
+}
+
+.message[data-kind="error"] {
+  background-color: #fbeaea;
+  border-color: #a32020;
+  color: #7e1717;
+}
+
+.message[data-kind="info"] {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+  color: #333;
+}
+
+/* C6: HISTORY AND FOOTER */
+.purchase-list {
+  padding-left: 22px;
+  margin-bottom: 0;
+}
+
+.purchase-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  overflow-wrap: anywhere;
+}
+
+.purchase-list li.editing {
+  background-color: #fff8e1;
+}
+
+.purchase-text {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.site-footer {
+  padding-top: 18px;
+  padding-bottom: 24px;
+  font-size: 0.88rem;
+  color: #666;
+  text-align: center;
+}
+
+/* C7: RESPONSIVE LAYOUT */
+@media (max-width: 700px) {
+  .page-layout,
+  .tracker,
+  .auth-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+}
+
 @media (max-width: 450px) {
-  h1 { font-size: 1.6rem; }
+  h1 {
+    font-size: 1.6rem;
+  }
 }
