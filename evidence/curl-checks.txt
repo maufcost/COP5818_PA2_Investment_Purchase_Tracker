@@ -1,0 +1,42 @@
+# curl checks (session cookie kept in a local cookie jar; token value not printed)
+
+$ curl -i http://localhost:3000/api/health
+HTTP/1.1 200 OK
+{"ok":true}
+
+$ curl -i http://localhost:3000/api/no-such-route
+HTTP/1.1 404 Not Found
+{"error":"API route not found"}
+
+$ curl -i http://localhost:3000/api/purchases   (no session)
+HTTP/1.1 401 Unauthorized
+{"error":"Login required"}
+
+$ curl -i -X POST /api/login  -H "Content-Type: application/json" -d "{bad json"   (with cookie + token)
+HTTP/1.1 400 Bad Request
+{"error":"Invalid JSON"}
+
+$ curl -i -X POST /api/login  (no X-CSRF-Token header)
+HTTP/1.1 403 Forbidden
+{"error":"CSRF token rejected"}
+
+$ curl -i -X POST /api/login  (wrong password, valid token)
+HTTP/1.1 401 Unauthorized
+{"error":"Invalid email or password"}
+
+$ curl -i -X POST /api/purchases  (valid token, not logged in)
+HTTP/1.1 401 Unauthorized
+{"error":"Login required"}
+
+$ curl -i -X POST /api/purchases  -H "Origin: http://evil.example"
+HTTP/1.1 403 Forbidden
+{"error":"Origin rejected"}
+
+# Login response headers: the session cookie flags (value redacted)
+HTTP/1.1 200 OK
+Set-Cookie: sid=<redacted>; Path=/; Expires=Sun, 08 Nov 2026 02:36:45 GMT; HttpOnly; SameSite=Lax
+{"id":1,"email":"user.a@example.test"}
+
+# Stored users (password column shows only the hash prefix; plaintext is never stored)
+{"id":1,"email":"user.a@example.test","hash_prefix":"$argon2id$v=19$m=65536,t=3,p=4..."}
+{"id":2,"email":"user.b@example.test","hash_prefix":"$argon2id$v=19$m=65536,t=3,p=4..."}

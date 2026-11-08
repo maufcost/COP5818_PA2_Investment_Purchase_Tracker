@@ -1,0 +1,67 @@
+# npm run check:api  (2026-11-07 20:36, Node v24.22.2)
+PASS       [1] Register A (email trimmed + lowercased) -> 201 {"id":3,"email":"user.a.mw75w416@example.test"}
+PASS       [1] Register B -> 201 {"id":4,"email":"user.b.mw75w416@example.test"}
+PASS       [1] Registration does not log in -> 401 {"error":"Login required"}
+PASS       [1] Duplicate email rejected -> 409 {"error":"An account with that email already exists"}
+PASS       [1] Too-short password rejected -> 400 {"error":"Password must be 8-128 characters"}
+PASS       [1] 129-character password rejected -> 400 {"error":"Password must be 8-128 characters"}
+PASS       [1] Invalid email rejected -> 400 {"error":"Enter a valid email address such as user@example.com"}
+PASS       [1] Wrong password and unknown email give identical generic 401 -> 401 {"error":"Invalid email or password"} / 401 {"error":"Invalid email or password"}
+PASS       [1] Login A returns only {id,email} -> 200 {"id":3,"email":"user.a.mw75w416@example.test"}
+PASS       [1] GET /api/me after login -> 200 {"id":3,"email":"user.a.mw75w416@example.test"}
+PASS       [2] Logged out GET /api/purchases -> 401 {"error":"Login required"}
+PASS       [2] Logged out GET /api/categories -> 401 {"error":"Login required"}
+PASS       [2] Logged out POST with valid CSRF token -> 401 -> 401 {"error":"Login required"}
+PASS       [2] Logged out DELETE -> 401 -> 401 {"error":"Login required"}
+PASS       [2] Missing CSRF token rejected -> 403 {"error":"CSRF token rejected"}
+PASS       [2] Wrong CSRF token rejected -> 403 {"error":"CSRF token rejected"}
+PASS       [2] Foreign Origin rejected -> 403 {"error":"Origin rejected"}
+PASS       [2] Login without CSRF token rejected -> 403 {"error":"CSRF token rejected"}
+PASS       [2] No data changed by rejected mutations -> 0 records before and after
+PASS       [3] GET /api/categories -> [{"id":1,"name":"Fund"},{"id":2,"name":"Stock"},{"id":3,"name":"Other"}]
+PASS       [3] Add Example Index Fund 5 x $20.00 -> 201 -> 201 {"id":3,"name":"Example Index Fund","quantity":5,"unitPriceCents":2000,"categoryId":1,"categoryName":"Fund","costCents":10000}
+PASS       [3] Add Example Company 3 x $15.50 (client costCents/ownerId ignored) -> 201 {"id":4,"name":"Example Company","quantity":3,"unitPriceCents":1550,"categoryId":2,"categoryName":"Stock","costCents":4650}
+PASS       [3] A has two records totaling $146.50 -> 2 records, $146.50
+PASS       [4] New login session sees the same records -> 2 records, $146.50
+PASS       [5] Edit company to quantity 4 (body id ignored) -> 200 {"id":4,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryId":2,"categoryName":"Stock","costCents":6200}
+PASS       [5] Total after edit is $162.00 -> $162.00
+PASS       [5] Delete fund purchase returns {ok:true} -> 200 {"ok":true}
+PASS       [5] One record, $62.00 remain -> 1 record, $62.00
+PASS       [5] Deleting it again -> 404 -> 404 {"error":"Purchase not found"}
+PASS       [6] B sees no A records -> 200 []
+PASS       [6] B PUT to A's purchase -> 404 -> 404 {"error":"Purchase not found"}
+PASS       [6] B DELETE of A's purchase -> 404 -> 404 {"error":"Purchase not found"}
+PASS       [6] B POST with A's id/ownerId in body creates a new B record -> 201 {"id":5,"name":"B Example Bond","quantity":2,"unitPriceCents":5000,"categoryId":3,"categoryName":"Other","costCents":10000}
+PASS       [6] B PUT with ownerId:A keeps B as owner and same id -> 200 {"id":5,"name":"B Example Bond","quantity":3,"unitPriceCents":5000,"categoryId":3,"categoryName":"Other","costCents":15000}
+PASS       [6] A's records unchanged and B's record not visible to A -> [{"id":4,"name":"Example Company","quantity":4,"unitPriceCents":1550,"categoryId":2,"categoryName":"Stock","costCents":6200}]
+PASS       [7] POST blank name -> 400 -> 400 {"error":"Investment name must be 1-100 characters"}
+PASS       [7] POST name over 100 characters -> 400 -> 400 {"error":"Investment name must be 1-100 characters"}
+PASS       [7] POST quantity 1.5 -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST quantity 0 -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST quantity 10001 -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST nonnumeric quantity "five" -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST numeric string quantity "5" -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST quantity true -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST quantity null -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST missing quantity -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] POST unitPriceCents 0 -> 400 -> 400 {"error":"Unit price must be a whole number of cents from 1 to 100,000,000 ($0.01 to $1,000,000.00)"}
+PASS       [7] POST unitPriceCents 1.5 -> 400 -> 400 {"error":"Unit price must be a whole number of cents from 1 to 100,000,000 ($0.01 to $1,000,000.00)"}
+PASS       [7] POST unitPriceCents 100000001 -> 400 -> 400 {"error":"Unit price must be a whole number of cents from 1 to 100,000,000 ($0.01 to $1,000,000.00)"}
+PASS       [7] POST unknown category 99 -> 400 -> 400 {"error":"Choose an existing category"}
+PASS       [7] POST array body -> 400 -> 400 {"error":"Request body must be a JSON object"}
+PASS       [7] PUT with invalid quantity -> 400 -> 400 {"error":"Quantity must be a whole number from 1 to 10,000"}
+PASS       [7] PUT invalid route id "abc" -> 400 -> 400 {"error":"Purchase ID must be a positive integer"}
+PASS       [7] PUT invalid route id "0" -> 400 -> 400 {"error":"Purchase ID must be a positive integer"}
+PASS       [7] PUT invalid route id "-1" -> 400 -> 400 {"error":"Purchase ID must be a positive integer"}
+PASS       [7] PUT invalid route id "1.5" -> 400 -> 400 {"error":"Purchase ID must be a positive integer"}
+PASS       [7] PUT invalid route id "1e3" -> 400 -> 400 {"error":"Purchase ID must be a positive integer"}
+PASS       [7] DELETE invalid route id -> 400 -> 400 {"error":"Purchase ID must be a positive integer"}
+PASS       [7] No invalid request changed data -> list identical before/after
+PASS       [8] <b>Example</b> stored literally; repeat creates separate record -> ids 6 and 7
+PASS       [10] Malformed JSON -> 400 JSON error -> 400 {"error":"Invalid JSON"}
+PASS       [10] Unknown API route -> 404 JSON error -> 404 {"error":"API route not found"}
+PASS       [10] GET /api/health -> 200 {"ok":true}
+PASS       [1] Logout returns {ok:true} -> 200 {"ok":true}
+PASS       [1] Old session cookie no longer authenticates after logout -> 401 {"error":"Login required"}
+
+64/64 checks passed. Users: user.a.mw75w416@example.test, user.b.mw75w416@example.test
