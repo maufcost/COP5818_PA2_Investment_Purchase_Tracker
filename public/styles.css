@@ -1,2 +1,113 @@
-body{font:16px/1.6 Arial,sans-serif;max-width:1000px;margin:24px auto;padding:0 20px;color:#202b33}section{margin:24px 0}label{display:block}input,select,button{font:inherit;padding:8px;margin:4px 8px 10px 0;max-width:100%;box-sizing:border-box}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #1367aa}li{margin-bottom:12px}[hidden]{display:none!important}button:disabled{opacity:.6}@media(max-width:500px){input,select{width:100%}}
-/* Keep or adapt your PA1 styles; preserve readable narrow-screen layout and visible focus. */
+/* Investment Purchase Tracker - PA1 layout extended for PA2 (account, categories, edit/delete). */
+
+/* C1: Page defaults */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  color: #1f2a33;
+  background: #f3f6f8;
+}
+.container { width: 92%; max-width: 1050px; margin: 0 auto; }
+[hidden] { display: none !important; }
+
+/* C2: Header and headings */
+.site-header { background: #17324d; color: #f5f9fc; padding: 30px 0; }
+.course-label { font-size: 0.85rem; margin: 0 0 8px; }
+.site-header p:last-child { margin: 0; }
+h1 { font-size: 2rem; margin: 0 0 8px; }
+h2 { font-size: 1.25rem; margin: 0 0 18px; }
+h3 { font-size: 1rem; margin: 0 0 8px; }
+
+/* C3: Main layout and panels */
+.page-layout {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 24px;
+  padding-top: 28px;
+}
+.tracker {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 24px;
+}
+.panel {
+  min-width: 0;
+  background: #fff;
+  padding: 24px;
+  border: 1px solid #d3dbe2;
+  border-radius: 8px;
+}
+.account, .purchases { grid-column: 1 / -1; }
+
+/* Account panel */
+.auth-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.account-status { margin: 4px 0 0; font-weight: bold; overflow-wrap: anywhere; }
+
+/* C4: Summary cards */
+.balance-card { background: #e8f1f8; border-radius: 6px; padding: 18px; margin-bottom: 18px; }
+.balance-value { font-size: 2rem; font-weight: bold; margin: 0; overflow-wrap: anywhere; }
+.total-card { border: 1px solid #d3dbe2; padding: 14px; border-radius: 6px; }
+.total-value { font-size: 1.25rem; font-weight: bold; margin: 0; overflow-wrap: anywhere; }
+.hint { font-size: 0.88rem; color: #4d5b66; }
+.form-field .hint { margin: 6px 0 0; }
+
+/* C5: Form controls */
+.form-field { margin-bottom: 16px; }
+label { display: block; font-weight: bold; margin-bottom: 6px; }
+input, select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #7b8994;
+  border-radius: 4px;
+  font: inherit;
+  background: #fff;
+  color: inherit;
+}
+.button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.submit-button, .secondary-button, .small-button {
+  border-radius: 4px;
+  padding: 12px 20px;
+  font: inherit;
+  cursor: pointer;
+}
+.submit-button { background: #17324d; color: #fff; border: 0; }
+.submit-button:hover { background: #24547f; }
+.secondary-button, .small-button { background: #fff; color: #17324d; border: 1px solid #17324d; }
+.secondary-button:hover, .small-button:hover { background: #e8f1f8; }
+.small-button { padding: 6px 12px; font-size: 0.9rem; }
+.small-button.danger { color: #9b1c1c; border-color: #9b1c1c; }
+.small-button.danger:hover { background: #fbeaea; }
+button:disabled { opacity: 0.6; cursor: progress; }
+input:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 3px solid #1367aa;
+  outline-offset: 3px;
+}
+input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #b42318; border-width: 2px; }
+
+/* Status message shared by account and purchase actions */
+.message { grid-column: 1 / -1; min-height: 1.5em; margin: 0; font-weight: bold; overflow-wrap: anywhere; }
+.message:empty { display: none; }
+.message[data-kind] { padding: 12px 16px; border-radius: 6px; border: 1px solid; }
+.message[data-kind="success"] { background: #e7f6ec; border-color: #2f7a46; color: #1d5230; }
+.message[data-kind="error"] { background: #fdecea; border-color: #b42318; color: #8a1c12; }
+.message[data-kind="info"] { background: #e8f1f8; border-color: #24547f; color: #17324d; }
+
+/* C6: History and footer */
+.purchase-list { padding-left: 22px; margin-bottom: 0; }
+.purchase-list li { padding: 10px 0; border-bottom: 1px solid #d3dbe2; overflow-wrap: anywhere; }
+.purchase-list li.editing { background: #fff8e1; }
+.purchase-text { display: block; margin-bottom: 6px; }
+.item-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.site-footer { padding-top: 18px; padding-bottom: 24px; font-size: 0.88rem; color: #4d5b66; }
+
+/* C7: Responsive layout */
+@media (max-width: 700px) {
+  .page-layout, .tracker, .auth-fields { grid-template-columns: 1fr; }
+  .panel { padding: 18px; }
+}
+@media (max-width: 450px) {
+  h1 { font-size: 1.6rem; }
+}
