@@ -131,8 +131,8 @@ This assignment was completed with the assistance of an AI coding tool.
 
 **How it was used.** Claude Code helped implement the numbered TODOs in `server.js`, `validation.js` and `public/script.js`, add the extra validation tests, and draft the explanations in this README and `test-report.md`. It also ran the browser and curl checks recorded as evidence. It diagnosed one environment issue: `better-sqlite3` crashed on Node 23, which led to using Node 24 LTS.
 
-**My own work.** The interface in `public/` is built from my completed PA1 (markup and styles, included in `PA1/`). I directed the work and made the design and submission decisions, reviewed and ran the application myself, asked for explanations of the authentication, session and cookie flow, and edited the code comments and documentation. `security.js`, `schema.sql` and the TODO structure were supplied by the course starter.
+**My own work.** The interface in `public/` is built from my completed PA1 (markup and styles, included in `PA1/`). I directed the work and made the design and submission decisions, reviewed and ran the application myself, wrote tests, asked for explanations of the authentication, session and cookie flow, added comments and my own documentation. `security.js`, `schema.sql` and the TODO structure were supplied by the course starter.
 
 ## Git history
 
-Repository: <!-- add the public repository URL here --> REPOSITORY_URL
+Repository: 
