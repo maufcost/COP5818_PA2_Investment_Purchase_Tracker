@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+PA1_original_starter/
+.DS_Store
+*.zip
+START_HERE.html
